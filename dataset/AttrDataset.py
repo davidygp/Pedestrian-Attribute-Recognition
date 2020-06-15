@@ -124,8 +124,8 @@ def get_transform(args):
 
     valid_transform = T.Compose([
         T.Resize((height, width)),
-	UnsharpMask(kernel_size=(5, 5), sigma=1.0, a=1.0, cutoff_method="bound"),
-    	#HistogramEqualize(selected_method="heq")
+	#UnsharpMask(kernel_size=(5, 5), sigma=1.0, a=1.0, cutoff_method="bound"),
+    	#HistogramEqualize(selected_method="heq"),
         T.ToTensor(),
         normalize
     ])
