@@ -74,8 +74,12 @@ def main(args):
 
     criterion = CEL_Sigmoid(sample_weight)
 
-    param_groups = [{'params': model.module.finetune_params(), 'lr': args.lr_ft},
-                    {'params': model.module.fresh_params(), 'lr': args.lr_new}]
+    if torch.cuda.is_available():
+        param_groups = [{'params': model.module.finetune_params(), 'lr': args.lr_ft},
+                        {'params': model.module.fresh_params(), 'lr': args.lr_new}]
+    else:
+        param_groups = [{'params': model.finetune_params(), 'lr': args.lr_ft},
+                        {'params': model.fresh_params(), 'lr': args.lr_new}]
     optimizer = torch.optim.SGD(param_groups, momentum=args.momentum, weight_decay=args.weight_decay, nesterov=False)
     lr_scheduler = ReduceLROnPlateau(optimizer, factor=0.1, patience=4)
 

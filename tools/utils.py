@@ -48,7 +48,8 @@ def set_seed(rand_seed):
     random.seed(rand_seed)
     torch.backends.cudnn.enabled = True
     torch.manual_seed(rand_seed)
-    torch.cuda.manual_seed(rand_seed)
+    if torch.cuda.available():
+        torch.cuda.manual_seed(rand_seed)
 
 
 def may_mkdirs(dir_name):
