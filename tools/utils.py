@@ -48,7 +48,7 @@ def set_seed(rand_seed):
     random.seed(rand_seed)
     torch.backends.cudnn.enabled = True
     torch.manual_seed(rand_seed)
-    if torch.cuda.available():
+    if torch.cuda.is_available():
         torch.cuda.manual_seed(rand_seed)
 
 

@@ -319,7 +319,7 @@ def resnext101_32x8d(pretrained=False, progress=True, **kwargs):
 
 if __name__ == '__main__':
     # print(resnet50())
-    if torch.cuda.available():
+    if torch.cuda.is_available():
         model = resnet50().cuda()
         x = torch.rand((1, 3, 256, 128)).cuda()
     else:

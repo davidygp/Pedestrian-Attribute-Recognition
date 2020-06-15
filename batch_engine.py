@@ -22,7 +22,7 @@ def batch_trainer(epoch, model, train_loader, criterion, optimizer):
     for step, (imgs, gt_label, imgname) in enumerate(train_loader):
 
         batch_time = time.time()
-        if torch.cuda.available():
+        if torch.cuda.is_available():
             imgs, gt_label = imgs.cuda(), gt_label.cuda()
         else:
             imgs, gt_label = imgs.cpu(), gt_label.cpu()
@@ -63,7 +63,7 @@ def valid_trainer(model, valid_loader, criterion):
     gt_list = []
     with torch.no_grad():
         for step, (imgs, gt_label, imgname) in enumerate(tqdm(valid_loader)):
-            if torch.cuda.available():
+            if torch.cuda.is_available():
                 imgs = imgs.cuda()
                 gt_label = gt_label.cuda()
             else:
