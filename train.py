@@ -16,6 +16,9 @@ from models.resnet import resnet50
 from tools.function import get_model_log_path, get_pedestrian_metrics
 from tools.utils import time_str, save_ckpt, ReDirectSTD, set_seed
 
+import getpass
+import inspect
+
 set_seed(605)
 
 
@@ -23,8 +26,14 @@ def main(args):
     visenv_name = args.dataset
     exp_dir = os.path.join('exp_result', args.dataset)
     model_dir, log_dir = get_model_log_path(exp_dir, visenv_name)
-    stdout_file = os.path.join(log_dir, f'stdout_{time_str()}.txt')
-    save_model_path = os.path.join(model_dir, 'ckpt_max.pth')
+
+    # Added for logging purposes
+    user = getpass.getuser() 
+    fixed_time_str = time_str()
+    stdout_file = os.path.join(log_dir, "_".join(['stdout', user, f'{fixed_time_str}.txt']) )
+    save_model_path = os.path.join(model_dir,  "_".join(['ckpt_max', user, f'{fixed_time_str}.pth']) )
+    trackitems_dir = os.path.join(log_dir, "_".join(['trackitems', user, f'{fixed_time_str}.txt']) )
+
 
     if args.redirector:
         print('redirector stdout')
@@ -83,6 +92,29 @@ def main(args):
     optimizer = torch.optim.SGD(param_groups, momentum=args.momentum, weight_decay=args.weight_decay, nesterov=False)
     lr_scheduler = ReduceLROnPlateau(optimizer, factor=0.1, patience=4)
 
+    # Added for logging purposes
+    with open(trackitems_dir, "a") as f:
+        code, line_no = inspect.getsourcelines(get_transform)
+        for line in code:
+            f.write(str(line))
+        f.write(str("\n\n"))
+        
+        f.write(str(args.__dict__))
+        f.write(str("\n\n"))
+        
+        f.write(str(lr_scheduler.__dict__))
+        f.write(str("\n\n"))
+        
+        model_str = str(model).lower()
+        have_dropout = 'dropout' in model_str
+        f.write('dropout: %s' %(have_dropout))
+        f.write(str("\n\n"))
+
+        have_leaky_relu = 'leaky_relu' in model_str
+        f.write('leaky_relu: %s' %(have_leaky_relu))
+        f.write(str("\n\n"))
+
+
     best_metric, epoch = trainer(epoch=args.train_epoch,
                                  model=model,
                                  train_loader=train_loader,
@@ -94,6 +126,10 @@ def main(args):
 
     print(f'{visenv_name},  best_metrc : {best_metric} in epoch{epoch}')
 
+    # Added for logging purposes
+    with open(trackitems_dir, "a") as f:
+        f.write(f'{visenv_name},  best_metrc : {best_metric} in epoch{epoch}')
+        f.write("\n\n")
 
 def trainer(epoch, model, train_loader, valid_loader, criterion, optimizer, lr_scheduler,
             path):
