@@ -10,8 +10,8 @@ import numpy as np
 
 
 def time_str(fmt=None):
-    if fmt is None:
-        fmt = '%Y-%m-%d_%H:%M:%S'
+    # if fmt is None:
+    fmt = '%Y-%m-%d_%H-%M-%S'
 
     #     time.strftime(format[, t])
     return datetime.datetime.today().strftime(fmt)

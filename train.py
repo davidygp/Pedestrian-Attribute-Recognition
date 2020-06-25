@@ -16,10 +16,13 @@ from models.resnet import resnet50
 from tools.function import get_model_log_path, get_pedestrian_metrics
 from tools.utils import time_str, save_ckpt, ReDirectSTD, set_seed
 
+from torch.utils.tensorboard import SummaryWriter
+
 import getpass
 import inspect
 
 set_seed(605)
+writer = SummaryWriter('runs/exp-2')
 
 
 def main(args):
@@ -28,7 +31,7 @@ def main(args):
     model_dir, log_dir = get_model_log_path(exp_dir, visenv_name)
 
     # Added for logging purposes
-    user = getpass.getuser() 
+    user = getpass.getuser()
     fixed_time_str = time_str()
     stdout_file = os.path.join(log_dir, "_".join(['stdout', user, f'{fixed_time_str}.txt']) )
     save_model_path = os.path.join(model_dir,  "_".join(['ckpt_max', user, f'{fixed_time_str}.pth']) )
@@ -159,6 +162,33 @@ def trainer(epoch, model, train_loader, valid_loader, criterion, optimizer, lr_s
         train_result = get_pedestrian_metrics(train_gt, train_probs)
         valid_result = get_pedestrian_metrics(valid_gt, valid_probs)
 
+        # tensorboard added
+        # writer.add_scalar(tag, function, iteration)
+        writer_step = i
+
+        writer.add_scalar('Train Loss', train_loss, writer_step)
+
+        writer.add_scalar('Train Accuracy', train_result.instance_acc, writer_step)
+        writer.add_scalar('Train Precision', train_result.instance_prec, writer_step)
+        writer.add_scalar('Train Recall', train_result.instance_recall, writer_step)
+        writer.add_scalar('Train F1', train_result.instance_f1, writer_step)
+
+        writer.add_scalar('Train Mean Accuracy', train_result.ma, writer_step)
+        writer.add_scalar('Train Pos Recall', np.mean(train_result.label_pos_recall), writer_step)
+        writer.add_scalar('Train Neg Recall', np.mean(train_result.label_neg_recall), writer_step)
+
+
+        writer.add_scalar('Valid Loss', valid_loss, writer_step)
+
+        writer.add_scalar('Valid Accuracy', valid_result.instance_acc, writer_step)
+        writer.add_scalar('Valid Precision', valid_result.instance_prec, writer_step)
+        writer.add_scalar('Valid Recall', valid_result.instance_recall, writer_step)
+        writer.add_scalar('Valid F1', valid_result.instance_f1, writer_step)
+
+        writer.add_scalar('Valid Mean Accuracy', valid_result.ma, writer_step)
+        writer.add_scalar('Valid Pos Recall', np.mean(valid_result.label_pos_recall), writer_step)
+        writer.add_scalar('Valid Neg Recall', np.mean(valid_result.label_neg_recall), writer_step)
+
         print(f'Evaluation on test set, \n',
               'ma: {:.4f},  pos_recall: {:.4f} , neg_recall: {:.4f} \n'.format(
                   valid_result.ma, np.mean(valid_result.label_pos_recall), np.mean(valid_result.label_neg_recall)),
@@ -177,6 +207,8 @@ def trainer(epoch, model, train_loader, valid_loader, criterion, optimizer, lr_s
             save_ckpt(model, path, i, maximum)
 
         result_list[i] = [train_result, valid_result]
+
+    writer.close()
 
     torch.save(result_list, os.path.join(os.path.dirname(path), 'metric_log.pkl'))
 
