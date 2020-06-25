@@ -351,10 +351,10 @@ class SENet(nn.Module):
     def features(self, x):
         x = self.layer0(x)
         x = self.layer1(x)
-        x2 = self.layer2(x)
-        x3 = self.layer3(x2)
-        x4 = self.layer4(x3)
-        return [x2, x3, x4]
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.layer4(x)
+        return x
 
     # def logits(self, x):
     #     x = self.avg_pool(x)
