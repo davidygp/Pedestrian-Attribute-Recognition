@@ -125,7 +125,8 @@ def main(args):
                                  criterion=criterion,
                                  optimizer=optimizer,
                                  lr_scheduler=lr_scheduler,
-                                 path=save_model_path)
+                                 path=save_model_path,
+                                 measure="f1")
 
     print(f'{visenv_name},  best_metrc : {best_metric} in epoch{epoch}')
 
@@ -135,7 +136,7 @@ def main(args):
         f.write("\n\n")
 
 def trainer(epoch, model, train_loader, valid_loader, criterion, optimizer, lr_scheduler,
-            path):
+            path, measure):
     maximum = float(-np.inf)
     best_epoch = 0
 
@@ -199,7 +200,12 @@ def trainer(epoch, model, train_loader, valid_loader, criterion, optimizer, lr_s
         print(f'{time_str()}')
         print('-' * 60)
 
-        cur_metric = valid_result.ma
+        # We only allow "accuracy" or "f1"
+        assert((measure.lower()=="accuracy") or (measure.lower()=="f1"))
+        if measure == 'accuracy':
+            cur_metric = valid_result.ma
+        elif measure == 'f1':
+            cur_metric = valid_result.instance_f1
 
         if cur_metric > maximum:
             maximum = cur_metric
