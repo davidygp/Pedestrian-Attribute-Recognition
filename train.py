@@ -18,12 +18,13 @@ from tools.utils import time_str, save_ckpt, ReDirectSTD, set_seed
 
 from torch.utils.tensorboard import SummaryWriter
 
+from datetime import datetime
 import getpass
 import inspect
 
 set_seed(605)
-writer = SummaryWriter('runs/exp-2')
-
+log_dir = 'runs/' + datetime.now().strftime("%Y%m%d-%H%M%S")
+writer = SummaryWriter(log_dir)
 
 def main(args):
     visenv_name = args.dataset

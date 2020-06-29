@@ -24,6 +24,8 @@ from models.resnet import resnet50
 from models.senet import se_resnet101, se_resnet50
 from tools.function import get_model_log_path, get_pedestrian_metrics
 from tools.utils import time_str, save_ckpt, ReDirectSTD, set_seed
+from datetime import datetime
+
 
 import torchvision.models as models
 
@@ -32,7 +34,8 @@ import torchvision.models as models
 from torch.utils.tensorboard import SummaryWriter
 
 set_seed(605)
-writer = SummaryWriter('runs/exp-2')
+log_dir = 'runs/' + datetime.now().strftime("%Y%m%d-%H%M%S")
+writer = SummaryWriter(log_dir)
 
 import argparse
 
@@ -45,7 +48,7 @@ def argument_parser():
     parser.add_argument("--debug", action='store_false')
 
     parser.add_argument("--batchsize", type=int, default=2)
-    parser.add_argument("--train_epoch", type=int, default=1)
+    parser.add_argument("--train_epoch", type=int, default=30)
     parser.add_argument("--height", type=int, default=256)
     parser.add_argument("--width", type=int, default=192)
     parser.add_argument("--lr_ft", type=float, default=0.01, help='learning rate of feature extractor')
@@ -107,7 +110,7 @@ def main(args):
     labels = train_set.label
     sample_weight = labels.mean(0)
 
-    backbone = se_resnet50()
+    backbone = resnet50()
     classifier = BaseClassifier(nattr=train_set.attr_num)
     model = FeatClassifier(backbone, classifier)
 
@@ -116,8 +119,12 @@ def main(args):
 
     criterion = CEL_Sigmoid(sample_weight)
 
-    param_groups = [{'params': model.finetune_params(), 'lr': args.lr_ft},
-                    {'params': model.fresh_params(), 'lr': args.lr_new}]
+    if torch.cuda.is_available():
+        param_groups = [{'params': model.module.finetune_params(), 'lr': args.lr_ft},
+                        {'params': model.module.fresh_params(), 'lr': args.lr_new}]
+    else:
+        param_groups = [{'params': model.finetune_params(), 'lr': args.lr_ft},
+                        {'params': model.fresh_params(), 'lr': args.lr_new}]
     optimizer = torch.optim.SGD(param_groups, momentum=args.momentum, weight_decay=args.weight_decay, nesterov=False)
     lr_scheduler = ReduceLROnPlateau(optimizer, factor=0.1, patience=4)
 
@@ -165,28 +172,14 @@ def trainer(epoch, model, train_loader, valid_loader, criterion, optimizer, lr_s
         # writer.add_scalar(tag, function, iteration)
         writer_step = i
 
-        writer.add_scalar('Train Loss', train_loss, writer_step)
-
-        writer.add_scalar('Train Accuracy', train_result.instance_acc, writer_step)
-        writer.add_scalar('Train Precision', train_result.instance_prec, writer_step)
-        writer.add_scalar('Train Recall', train_result.instance_recall, writer_step)
-        writer.add_scalar('Train F1', train_result.instance_f1, writer_step)
-
-        writer.add_scalar('Train Mean Accuracy', train_result.ma, writer_step)
-        writer.add_scalar('Train Pos Recall', np.mean(train_result.label_pos_recall), writer_step)
-        writer.add_scalar('Train Neg Recall', np.mean(train_result.label_neg_recall), writer_step)
-
-
-        writer.add_scalar('Valid Loss', valid_loss, writer_step)
-
-        writer.add_scalar('Valid Accuracy', valid_result.instance_acc, writer_step)
-        writer.add_scalar('Valid Precision', valid_result.instance_prec, writer_step)
-        writer.add_scalar('Valid Recall', valid_result.instance_recall, writer_step)
-        writer.add_scalar('Valid F1', valid_result.instance_f1, writer_step)
-
-        writer.add_scalar('Valid Mean Accuracy', valid_result.ma, writer_step)
-        writer.add_scalar('Valid Pos Recall', np.mean(valid_result.label_pos_recall), writer_step)
-        writer.add_scalar('Valid Neg Recall', np.mean(valid_result.label_neg_recall), writer_step)
+        writer.add_scalars('Loss', {'Train':train_loss, 'Valid':valid_loss}, writer_step)
+        writer.add_scalars('Accuracy', {'Train':train_result.instance_acc, 'Valid':valid_result.instance_acc}, writer_step)
+        writer.add_scalars('Precision', {'Train':train_result.instance_prec, 'Valid':valid_result.instance_prec}, writer_step)
+        writer.add_scalars('Recall', {'Train':train_result.instance_recall, 'Valid':valid_result.instance_recall}, writer_step)
+        writer.add_scalars('F1', {'Train':train_result.instance_f1, 'Valid':valid_result.instance_f1}, writer_step)
+        writer.add_scalars('Mean Accuracy', {'Train':train_result.ma, 'Valid':valid_result.ma}, writer_step)
+        writer.add_scalars('Pos Recall', {'Train':np.mean(train_result.label_pos_recall), 'Valid':np.mean(valid_result.label_pos_recall)}, writer_step)
+        writer.add_scalars('Neg Recall', {'Train':np.mean(train_result.label_neg_recall), 'Valid':np.mean(valid_result.label_neg_recall)}, writer_step)
 
         print(f'Evaluation on test set, \n',
               'ma: {:.4f},  pos_recall: {:.4f} , neg_recall: {:.4f} \n'.format(
