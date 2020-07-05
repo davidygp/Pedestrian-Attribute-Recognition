@@ -22,10 +22,13 @@ from loss.CE_loss import CEL_Sigmoid
 from models.base_block import FeatClassifier, BaseClassifier
 from models.resnet import resnet50
 from models.senet import se_resnet101, se_resnet50
+from models.densenet import densenet121
+from models.resnext import resnext101_32x4d
+from models.dpn import dpn68
 from tools.function import get_model_log_path, get_pedestrian_metrics
 from tools.utils import time_str, save_ckpt, ReDirectSTD, set_seed
 from datetime import datetime
-
+import sys
 
 import torchvision.models as models
 
@@ -45,10 +48,11 @@ def argument_parser():
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument("dataset", type=str, default="RAP")
+    parser.add_argument("--model", type=str, default="dpn68")
     parser.add_argument("--debug", action='store_false')
 
     parser.add_argument("--batchsize", type=int, default=2)
-    parser.add_argument("--train_epoch", type=int, default=30)
+    parser.add_argument("--train_epoch", type=int, default=1)
     parser.add_argument("--height", type=int, default=256)
     parser.add_argument("--width", type=int, default=192)
     parser.add_argument("--lr_ft", type=float, default=0.01, help='learning rate of feature extractor')
@@ -110,8 +114,16 @@ def main(args):
     labels = train_set.label
     sample_weight = labels.mean(0)
 
-    backbone = resnet50()
-    classifier = BaseClassifier(nattr=train_set.attr_num)
+    backbone = getattr(sys.modules[__name__], args.model)()
+    
+    if "dpn" in args.model:
+        net_parameter = 832
+    elif "densenet" in args.model:
+        net_parameter = 1024
+    else:
+        net_parameter = 2048
+    
+    classifier = BaseClassifier(netpara=net_parameter, nattr=train_set.attr_num)
     model = FeatClassifier(backbone, classifier)
 
     if torch.cuda.is_available():

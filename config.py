@@ -6,6 +6,7 @@ def argument_parser():
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument("dataset", type=str, default="RAP")
+    parser.add_argument("--model", type=str, default="resnet50")
     parser.add_argument("--debug", action='store_false')
 
     parser.add_argument("--batchsize", type=int, default=64)

@@ -21,6 +21,7 @@ from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 import getpass
 import inspect
+import sys
 
 set_seed(605)
 log_dir = 'runs/' + datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -78,8 +79,16 @@ def main(args):
     labels = train_set.label
     sample_weight = labels.mean(0)
 
-    backbone = resnet50()
-    classifier = BaseClassifier(nattr=train_set.attr_num)
+    backbone = getattr(sys.modules[__name__], args.model)()
+    
+    if "dpn" in args.model:
+        net_parameter = 832
+    elif "densenet" in args.model:
+        net_parameter = 1024
+    else:
+        net_parameter = 2048
+    
+    classifier = BaseClassifier(netpara=net_parameter, nattr=train_set.attr_num)
     model = FeatClassifier(backbone, classifier)
 
     if torch.cuda.is_available():

@@ -5,10 +5,10 @@ from torch.nn.modules.batchnorm import _BatchNorm
 
 
 class BaseClassifier(nn.Module):
-    def __init__(self, nattr):
+    def __init__(self, netpara, nattr):
         super().__init__()
         self.logits = nn.Sequential(
-            nn.Linear(2048, nattr),
+            nn.Linear(netpara, nattr), # 832 for dpn, 1024 for densenet, 2048 for resnet related
             nn.BatchNorm1d(nattr)
         )
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
