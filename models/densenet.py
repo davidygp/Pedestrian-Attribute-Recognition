@@ -239,7 +239,7 @@ def densenet121(pretrained=True, progress=True, **kwargs):
                      **kwargs)
 
 
-def densenet161(pretrained=False, progress=True, **kwargs):
+def densenet161(pretrained=True, progress=True, **kwargs):
     r"""Densenet-161 model from
     `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`_
     Args:
@@ -252,7 +252,7 @@ def densenet161(pretrained=False, progress=True, **kwargs):
                      **kwargs)
 
 
-def densenet169(pretrained=False, progress=True, **kwargs):
+def densenet169(pretrained=True, progress=True, **kwargs):
     r"""Densenet-169 model from
     `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`_
     Args:
@@ -265,7 +265,7 @@ def densenet169(pretrained=False, progress=True, **kwargs):
                      **kwargs)
 
 
-def densenet201(pretrained=False, progress=True, **kwargs):
+def densenet201(pretrained=True, progress=True, **kwargs):
     r"""Densenet-201 model from
     `"Densely Connected Convolutional Networks" <https://arxiv.org/pdf/1608.06993.pdf>`_
     Args:
