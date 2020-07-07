@@ -85,8 +85,10 @@ def main(args):
 
     backbone = getattr(sys.modules[__name__], args.model)()
     
-    if "dpn" in args.model:
+    if "dpn68" in args.model:
         net_parameter = 832
+    elif "dpn" in args.model:
+        net_parameter = 2688
     elif "densenet" in args.model:
         net_parameter = 1024
     else:

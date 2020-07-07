@@ -24,7 +24,7 @@ from models.resnet import resnet50
 from models.senet import se_resnet101, se_resnet50
 from models.densenet import densenet121
 from models.resnext import resnext101_32x4d
-from models.dpn import dpn68
+from models.dpn import dpn68, dpn92
 from tools.function import get_model_log_path, get_pedestrian_metrics
 from tools.utils import time_str, save_ckpt, ReDirectSTD, set_seed
 from datetime import datetime
@@ -48,7 +48,7 @@ def argument_parser():
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
     parser.add_argument("dataset", type=str, default="RAP")
-    parser.add_argument("--model", type=str, default="dpn68")
+    parser.add_argument("--model", type=str, default="dpn92")
     parser.add_argument("--debug", action='store_false')
 
     parser.add_argument("--batchsize", type=int, default=2)
@@ -116,8 +116,10 @@ def main(args):
 
     backbone = getattr(sys.modules[__name__], args.model)()
     
-    if "dpn" in args.model:
+    if "dpn68" in args.model:
         net_parameter = 832
+    elif "dpn" in args.model:
+        net_parameter = 2688
     elif "densenet" in args.model:
         net_parameter = 1024
     else:
