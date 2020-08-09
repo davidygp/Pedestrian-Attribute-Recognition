@@ -34,7 +34,6 @@ def copy_4k_to_image_4k_peta_folder():
 
 
 def generate_data_description(pa100k_dir, peta_dir):
-
     annotated_4k_df = pd.read_csv(os.path.join(pa100k_dir, '4k_annotated_zero_one.csv'))
     annotated_4k_df = annotated_4k_df.drop(annotated_4k_df.columns[0], axis=1)
     annotated_4k_df['image_id'] = annotated_4k_df['image_id'].apply(lambda x: '0' + x if len(x) == 9 else x)
@@ -85,11 +84,11 @@ def generate_data_description(pa100k_dir, peta_dir):
         peta_data_info.partition.test = []
 
         list_4k = [x for x in range(4000)]
-        list_19000 = [x for x in range(19000)]
-        random.shuffle(list_4k)
-        random.shuffle(list_19000)
+        list_19000 = [x for x in range(4000, 23000)]
 
         for idx in range(5):
+            random.shuffle(list_4k)
+            random.shuffle(list_19000)
             test = np.array(list_19000[-7600:])
 
             train = np.array(list_4k + list_19000[:11400])
