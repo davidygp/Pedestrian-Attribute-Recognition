@@ -81,7 +81,9 @@ def main(args):
           f'attr_num : {train_set.attr_num}')
 
     labels = train_set.label
-    sample_weight = labels.mean(0)
+    # sample_weight = labels.mean(0)
+    sample_weight = labels[labels!=2].reshape((labels.shape[0], labels.shape[1])).mean(0)
+    # sample_weight = np.where(labels!=2,labels,np.nan).mean(0)
 
     backbone = getattr(sys.modules[__name__], args.model)()
     
@@ -183,28 +185,14 @@ def trainer(epoch, model, train_loader, valid_loader, criterion, optimizer, lr_s
         # writer.add_scalar(tag, function, iteration)
         writer_step = i
 
-        writer.add_scalar('Train Loss', train_loss, writer_step)
-
-        writer.add_scalar('Train Accuracy', train_result.instance_acc, writer_step)
-        writer.add_scalar('Train Precision', train_result.instance_prec, writer_step)
-        writer.add_scalar('Train Recall', train_result.instance_recall, writer_step)
-        writer.add_scalar('Train F1', train_result.instance_f1, writer_step)
-
-        writer.add_scalar('Train Mean Accuracy', train_result.ma, writer_step)
-        writer.add_scalar('Train Pos Recall', np.mean(train_result.label_pos_recall), writer_step)
-        writer.add_scalar('Train Neg Recall', np.mean(train_result.label_neg_recall), writer_step)
-
-
-        writer.add_scalar('Valid Loss', valid_loss, writer_step)
-
-        writer.add_scalar('Valid Accuracy', valid_result.instance_acc, writer_step)
-        writer.add_scalar('Valid Precision', valid_result.instance_prec, writer_step)
-        writer.add_scalar('Valid Recall', valid_result.instance_recall, writer_step)
-        writer.add_scalar('Valid F1', valid_result.instance_f1, writer_step)
-
-        writer.add_scalar('Valid Mean Accuracy', valid_result.ma, writer_step)
-        writer.add_scalar('Valid Pos Recall', np.mean(valid_result.label_pos_recall), writer_step)
-        writer.add_scalar('Valid Neg Recall', np.mean(valid_result.label_neg_recall), writer_step)
+        writer.add_scalars('Loss', {'Train':train_loss, 'Valid':valid_loss}, writer_step)
+        writer.add_scalars('Accuracy', {'Train':train_result.instance_acc, 'Valid':valid_result.instance_acc}, writer_step)
+        writer.add_scalars('Precision', {'Train':train_result.instance_prec, 'Valid':valid_result.instance_prec}, writer_step)
+        writer.add_scalars('Recall', {'Train':train_result.instance_recall, 'Valid':valid_result.instance_recall}, writer_step)
+        writer.add_scalars('F1', {'Train':train_result.instance_f1, 'Valid':valid_result.instance_f1}, writer_step)
+        writer.add_scalars('Mean Accuracy', {'Train':train_result.ma, 'Valid':valid_result.ma}, writer_step)
+        writer.add_scalars('Pos Recall', {'Train':np.mean(train_result.label_pos_recall), 'Valid':np.mean(valid_result.label_pos_recall)}, writer_step)
+        writer.add_scalars('Neg Recall', {'Train':np.mean(train_result.label_neg_recall), 'Valid':np.mean(valid_result.label_neg_recall)}, writer_step)
 
         print(f'Evaluation on test set, \n',
               'ma: {:.4f},  pos_recall: {:.4f} , neg_recall: {:.4f} \n'.format(

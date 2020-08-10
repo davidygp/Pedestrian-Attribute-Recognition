@@ -21,6 +21,7 @@ from dataset.AttrDataset import AttrDataset, get_transform
 from loss.CE_loss import CEL_Sigmoid
 from models.base_block import FeatClassifier, BaseClassifier
 from models.resnet import resnet50
+from models.resnet_hr import resnet50_hr
 from models.senet import se_resnet101, se_resnet50
 from models.densenet import densenet121
 from models.resnext import resnext101_32x4d
@@ -47,8 +48,8 @@ def argument_parser():
     parser = argparse.ArgumentParser(description="attribute recognition",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument("dataset", type=str, default="RAP")
-    parser.add_argument("--model", type=str, default="dpn92")
+    parser.add_argument("dataset", type=str, default="PETA")
+    parser.add_argument("--model", type=str, default="resnet50_hr")
     parser.add_argument("--debug", action='store_false')
 
     parser.add_argument("--batchsize", type=int, default=2)
@@ -112,7 +113,9 @@ def main(args):
           f'attr_num : {train_set.attr_num}')
 
     labels = train_set.label
-    sample_weight = labels.mean(0)
+    # sample_weight = labels.mean(0)
+    sample_weight = labels[labels!=2].reshape((labels.shape[0], labels.shape[1])).mean(0)
+    # sample_weight = np.where(labels!=2,labels,np.nan).mean(0)
 
     backbone = getattr(sys.modules[__name__], args.model)()
     

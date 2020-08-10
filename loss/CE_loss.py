@@ -21,7 +21,8 @@ class CEL_Sigmoid(nn.Module):
 
         loss = F.binary_cross_entropy_with_logits(logits, targets, reduction='none')
 
-        targets_mask = torch.where(targets.detach().cpu() > 0.5, torch.ones(1), torch.zeros(1))
+        # targets_mask = torch.where(targets.detach().cpu() > 0.5, torch.ones(1), torch.zeros(1))
+        targets_mask = torch.where( (targets.detach().cpu() > 0.5) & (targets.detach().cpu() <= 1), torch.ones(1), torch.zeros(1))
         if self.sample_weight is not None:
             weight = ratio2weight(targets_mask, self.sample_weight)
             if torch.cuda.is_available():
