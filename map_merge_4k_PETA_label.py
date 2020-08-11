@@ -84,17 +84,22 @@ def generate_data_description(pa100k_dir, peta_dir):
         peta_data_info.partition.test = []
 
         list_4k = [x for x in range(4000)]
-        list_19000 = [x for x in range(4000, 23000)]
+        # list_19000 = [x for x in range(4000, 23000)]
 
         for idx in range(5):
             random.shuffle(list_4k)
-            random.shuffle(list_19000)
-            test = np.array(list_19000[-7600:])
+            # random.shuffle(list_19000)
 
-            train = np.array(list_4k + list_19000[:11400])
-            val = np.array([])
+            train = peta_data['peta'][0][0][3][idx][0][0][0][0][:, 0] - 1 + 4000
+            val = peta_data['peta'][0][0][3][idx][0][0][0][1][:, 0] - 1 + 4000
+            test = peta_data['peta'][0][0][3][idx][0][0][0][2][:, 0] - 1 + 4000
+            trainval = np.concatenate((train, val), axis=0)
 
-            trainval = np.array(list_4k + list_19000[:11400])
+            # # test = np.array(list_19000[-7600:])
+            # train = np.array(list_4k + list_19000[:11400])
+            # val = np.array([])
+
+            trainval = np.array(trainval.tolist() + list_4k)
 
             peta_data_info.partition.train.append(train)
             peta_data_info.partition.val.append(val)
