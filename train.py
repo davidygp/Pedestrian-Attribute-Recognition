@@ -82,8 +82,7 @@ def main(args):
 
     labels = train_set.label
     # sample_weight = labels.mean(0)
-    sample_weight = labels[labels!=2].reshape((labels.shape[0], labels.shape[1])).mean(0)
-    # sample_weight = np.where(labels!=2,labels,np.nan).mean(0)
+    ample_weight = np.nanmean(np.where(labels!=2,labels,np.nan), axis=0)
 
     backbone = getattr(sys.modules[__name__], args.model)()
     

@@ -6,3 +6,5 @@ runs
 pbs
 output
 *.venus01
+debug.py
+models/resnet_hr.py

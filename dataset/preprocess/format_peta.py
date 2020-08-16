@@ -26,7 +26,7 @@ def generate_data_description(save_dir, reorder):
     """
     create a dataset description file, which consists of images, labels
     """
-    peta_data = loadmat(os.path.join(save_dir, 'PETA_added.mat'))
+    peta_data = loadmat(os.path.join(save_dir, 'PETA.mat'))
     dataset = EasyDict()
     dataset.description = 'peta'
     dataset.reorder = 'group_order'
