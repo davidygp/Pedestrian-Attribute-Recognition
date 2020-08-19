@@ -48,7 +48,7 @@ def argument_parser():
     parser = argparse.ArgumentParser(description="attribute recognition",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument("dataset", type=str, default="PETA")
+    parser.add_argument("dataset", type=str, default="RAP")
     parser.add_argument("--model", type=str, default="resnet50")
     parser.add_argument("--debug", action='store_false')
 
@@ -225,7 +225,7 @@ def trainer(epoch, model, train_loader, valid_loader, criterion, optimizer, lr_s
 
 
 parser = argument_parser()
-args = parser.parse_args(["PETA"])
+args = parser.parse_args(["RAP"])
 main(args)
 
     # os.path.abspath()
