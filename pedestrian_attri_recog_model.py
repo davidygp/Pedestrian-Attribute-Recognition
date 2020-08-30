@@ -8,7 +8,7 @@ from PIL import Image, ImageDraw
 from torch.autograd import Variable
 
 from config import argument_parser
-from dataset.AttrDataset import AttrDataset, get_transform
+from dataset.AttrDataset import get_transform
 from models.base_block import FeatClassifier, BaseClassifier
 from models.resnet import resnet50
 from tools.function import get_model_log_path
@@ -44,7 +44,6 @@ FULL_ATTRIBUTES = ["personalLess30", "personalLess45", "personalLess60", "person
 class AttrRecogModel:
     def __init__(self):
         parser = argument_parser()
-        parser.add_argument('--dataset', type=str, default='PETA', choices=['peta', 'rap', 'pa100k'])
         args = parser.parse_args()
 
         visenv_name = 'PETA'
@@ -60,26 +59,26 @@ class AttrRecogModel:
         pprint.pprint(OrderedDict(args.__dict__))
 
         print('-' * 60)
-        print(f'use GPU{args.device} for training')
 
         _, predict_tsfm = get_transform(args)
 
-        valid_set = AttrDataset(args=args, split=args.valid_split, transform=predict_tsfm)
-
-        # todo: not to load from .pkl file but from a file containing list of attributes
-        args.att_list = valid_set.attr_id
+        args.att_list = FULL_ATTRIBUTES
 
         backbone = resnet50()
         net_parameter = 2048
-        classifier = BaseClassifier(netpara=net_parameter, nattr=valid_set.attr_num)
+        classifier = BaseClassifier(netpara=net_parameter, nattr=len(FULL_ATTRIBUTES))
         model = FeatClassifier(backbone, classifier)
 
-        if torch.cuda.is_available():
+        FORCE_TO_CPU = True
+        if torch.cuda.is_available() and not FORCE_TO_CPU:
             model = torch.nn.DataParallel(model).cuda()
+            ckpt = torch.load(save_model_path)
+            print(f'Model is served with GPU ')
+        else:
+            model = torch.nn.DataParallel(model)
+            ckpt = torch.load(save_model_path, map_location=torch.device('cpu'))
+            print(f'Model is served with CPU ')
 
-        # model.to(torch.device('cpu'))
-
-        ckpt = torch.load(save_model_path)
         model.load_state_dict(ckpt['state_dicts'])
         model.eval()
 
@@ -91,6 +90,44 @@ class AttrRecogModel:
         self.args = args
         self.predict_tsfm = predict_tsfm
         self.model = model
+
+    def predict_image(self, input_image):
+        # visenv_name = args.dataset
+        # load one image
+        path = './static/uploads/'
+        output_image = input_image[:-4] + '_predicted.png'
+        img = Image.open(path + input_image)
+        img_trans = self.predict_tsfm(img)
+        img_trans = torch.unsqueeze(img_trans, dim=0)
+        img_var = Variable(img_trans).cuda()
+        score = self.model(img_var).data.cpu().numpy()
+
+        # show the score in command line
+        result = {}
+        for idx in range(len(self.args.att_list)):
+            orgin_score = score[0, idx]
+            sigmoid_score = 1 / (1 + np.exp(-1 * orgin_score))
+            # if score[0, idx] >= 0:
+            #     print('%s: %.2f' % (cfg.att_list[idx], score[0, idx]))
+            print('%s: %.5f' % (self.args.att_list[idx], sigmoid_score))
+            result[self.args.att_list[idx]] = sigmoid_score
+
+        # show the score in the image
+        img = img.resize(size=(256, 512), resample=Image.BILINEAR)
+        draw = ImageDraw.Draw(img)
+        positive_cnt = 0
+        for idx in range(len(self.args.att_list)):
+            if score[0, idx] >= 0:
+                orgin_score = score[0, idx]
+                sigmoid_score = 1 / (1 + np.exp(-1 * orgin_score))
+                # txt = '%s: %.2f' % (cfg.att_list[idx], score[0, idx])
+                txt = '%s: %.5f' % (self.args.att_list[idx], sigmoid_score)
+                draw.text((10, 10 + 10 * positive_cnt), txt, (255, 0, 0))
+                positive_cnt += 1
+        # img.save('./static/uploads/00003_predicted.png')
+        img.save(path + output_image)
+
+        return result
 
     def predict_image_general(self, input_image_full_path):
         from collections import OrderedDict
@@ -105,9 +142,7 @@ class AttrRecogModel:
         for idx in range(len(self.args.att_list)):
             orgin_score = score[0, idx]
             sigmoid_score = 1 / (1 + np.exp(-1 * orgin_score))
-            # if score[0, idx] >= 0:
-            #     print('%s: %.2f' % (cfg.att_list[idx], score[0, idx]))
-            # print('%s: %.5f' % (self.args.att_list[idx], sigmoid_score))
+
             result[self.args.att_list[idx]] = sigmoid_score
 
         return result
