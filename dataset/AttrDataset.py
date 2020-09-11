@@ -310,8 +310,8 @@ class AttrDataset_new(data.Dataset):
                 img = self.transform(img)
         
         if "LabelSmoothing" in self.transformation_dict["Order"]:
-            assert(pos_val <= 1.0 and pos_val >= 0)
             pos_val = self.transformation_dict["LabelSmoothing"]["pos_val"] 
+            assert(pos_val <= 1.0 and pos_val >= 0)
             gt_label = np.where(gt_label > 0.5, pos_val, 1-pos_val)
 
         #if self.target_transform is not None:
