@@ -1,8 +1,18 @@
 import os
+import sys
+sys.path.append("/home/svu/e0384936/Anaconda3/Lib/site-packages")
+cwd = os.getcwd()
+if "Pedestrian-Attribute-Recognition" in cwd:
+    print("We're currently in Pedestrian-Attribute-Recognition folder")
+else:
+    print("Moving into Pedestrian-Attribute-Recognition folder")
+
+import os
 import pprint
 from collections import OrderedDict, defaultdict
 
 import numpy as np
+import pandas as pd
 import torch
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
@@ -16,6 +26,7 @@ from models.base_block import FeatClassifier, BaseClassifier
 from models.resnet import resnet50, resnet101, resnet152, resnext50_32x4d, resnext101_32x8d
 from models.dpn import dpn68, dpn68b, dpn92, dpn98, dpn131, dpn107
 from models.densenet import densenet121, densenet169, densenet201, densenet161
+from models.senet import se_resnet101, se_resnet50
 
 from tools.function import get_model_log_path, get_pedestrian_metrics
 from tools.utils import time_str, save_ckpt, ReDirectSTD, set_seed
@@ -28,8 +39,6 @@ import inspect
 import sys
 
 set_seed(605)
-log_dir = 'runs/' + datetime.now().strftime("%Y%m%d-%H%M%S")
-writer = SummaryWriter(log_dir)
 
 def main(args):
     visenv_name = args.dataset
@@ -42,7 +51,6 @@ def main(args):
     stdout_file = os.path.join(log_dir, "_".join(['stdout', user, f'{fixed_time_str}.txt']) )
     save_model_path = os.path.join(model_dir,  "_".join(['ckpt_max', user, f'{fixed_time_str}.pth']) )
     trackitems_dir = os.path.join(log_dir, "_".join(['trackitems', user, f'{fixed_time_str}.txt']) )
-
 
     if args.redirector:
         print('redirector stdout')
@@ -158,6 +166,10 @@ def trainer(epoch, model, train_loader, valid_loader, criterion, optimizer, lr_s
     best_epoch = 0
 
     result_list = defaultdict()
+    
+    df_metrics = pd.DataFrame(columns=['epoch', 'train_loss', 'train_instance_acc', 'train_instance_prec', 'train_instance_recall', 'train_instance_f1', 'train_ma', 'train_pos_recall', 'train_neg_recall',
+                               'valid_loss', 'valid_instance_acc', 'valid_instance_prec', 'valid_instance_recall', 'valid_instance_f1', 'valid_ma', 'valid_pos_recall', 'valid_neg_recall'])
+
 
     for i in range(epoch):
 
@@ -202,6 +214,31 @@ def trainer(epoch, model, train_loader, valid_loader, criterion, optimizer, lr_s
 
         print(f'{time_str()}')
         print('-' * 60)
+        
+         # create metrics dataframe to save as csv
+
+        new_metrics = { 
+            'epoch':i,
+            'train_loss':train_loss,
+            'train_instance_acc':train_result.instance_acc,
+            'train_instance_prec':train_result.instance_prec,
+            'train_instance_recall':train_result.instance_recall,
+            'train_instance_f1':train_result.instance_f1,
+            'train_ma':train_result.ma,
+            'train_pos_recall':np.mean(train_result.label_pos_recall),
+            'train_neg_recall':np.mean(train_result.label_neg_recall),
+            'valid_loss':valid_loss,
+            'valid_instance_acc':valid_result.instance_acc,
+            'valid_instance_prec':valid_result.instance_prec,
+            'valid_instance_recall':valid_result.instance_recall,
+            'valid_instance_f1':valid_result.instance_f1,
+            'valid_ma':valid_result.ma,
+            'valid_pos_recall':np.mean(valid_result.label_pos_recall),
+            'valid_neg_recall':np.mean(valid_result.label_neg_recall)
+            }
+        #append row to the dataframe
+        df_metrics = df_metrics.append(new_metrics, ignore_index=True)
+        df_metrics.to_csv(csv_file_name, index=False)
 
         # We only allow "accuracy" or "f1"
         assert((measure.lower()=="accuracy") or (measure.lower()=="f1"))
@@ -225,8 +262,17 @@ def trainer(epoch, model, train_loader, valid_loader, criterion, optimizer, lr_s
 
 
 if __name__ == '__main__':
+    
     parser = argument_parser()
     args = parser.parse_args()
+    
+    log_dir = 'runs/' + args.dataset+"_"+args.model+"_"+datetime.now().strftime("%Y%m%d-%H%M%S")
+    csv_dir = 'csv_folder/'
+    if not os.path.exists(csv_dir):
+        os.makedirs(csv_dir)
+    csv_file_name = os.path.join(csv_dir, args.dataset+"_"+args.model+"_"+datetime.now().strftime("%Y%m%d-%H%M%S") +'.csv')
+    writer = SummaryWriter(log_dir)
+
     main(args)
 
     # os.path.abspath()
