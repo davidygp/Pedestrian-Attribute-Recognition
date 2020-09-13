@@ -23,5 +23,9 @@ def argument_parser():
     parser.add_argument('--device', default=0, type=str, help='gpu device ids for CUDA_VISIBLE_DEVICES')
     parser.add_argument("--redirector", action='store_false')
     parser.add_argument('--use_bn', action='store_false')
+    
+    parser.add_argument('--train_transform', type=json.loads, default='{"Order": ["Resize", "Pad", "RandomCrop", "RandomHorizontalFlip", "ToTensor", "Normalize"], "Resize": {"size": [256, 192]}, "Pad": {"padding": 10}, "RandomCrop": {"size": [256, 192]}, "RandomHorizontalFlip": {}, "Normalize": {"mean": [0.485, 0.456, 0.406], "std": [0.229, 0.224, 0.225]}}')
+
+    parser.add_argument('--valid_transform', type=json.loads, default='{"Order": ["Resize", "ToTensor", "Normalize"], "Resize": {"size": [256, 192]}, "Normalize": {"mean": [0.485, 0.456, 0.406], "std": [0.229, 0.224, 0.225]}}')
 
     return parser
