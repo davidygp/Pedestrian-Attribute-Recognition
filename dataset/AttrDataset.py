@@ -127,7 +127,7 @@ class AttrDataset(data.Dataset):
 
     def __init__(self, split, args, transform=None, target_transform=None):
 
-        assert args.dataset in ['PETA', 'PETA_dataset', 'PA100k', 'RAP', 'RAP2'], \
+        assert args.dataset in ['PETA', 'PA100k', 'RAP', 'RAP2', 'PETA+PA100k+RAP', 'PETA+RAP', 'PETA+PA100k'], \
             f'dataset name {args.dataset} is not exist'
 
         data_path = get_pkl_rootpath(args.dataset)
@@ -240,7 +240,7 @@ class AttrDataset_new(data.Dataset):
 
     def __init__(self, split, args, transformation_dict):
 
-        assert args.dataset in ['PETA', 'PETA_dataset', 'PA100k', 'RAP', 'RAP2'], \
+        assert args.dataset in ['PETA', 'PA100k', 'RAP', 'RAP2', 'PETA+PA100k+RAP', 'PETA+RAP', 'PETA+PA100k'], \
             f'dataset name {args.dataset} is not exist'
 
         data_path = get_pkl_rootpath(args.dataset)
