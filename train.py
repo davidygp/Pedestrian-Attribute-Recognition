@@ -19,7 +19,7 @@ from torch.utils.data import DataLoader
 
 from batch_engine import valid_trainer, batch_trainer
 from config import argument_parser
-from dataset.AttrDataset import AttrDataset, get_transform
+from dataset.AttrDataset import AttrDataset, get_transform, AttrDataset_new, parse_transformation_dict
 from loss.CE_loss import CEL_Sigmoid
 
 from models.base_block import FeatClassifier, BaseClassifier
@@ -65,7 +65,8 @@ def main(args):
     train_tsfm, valid_tsfm = get_transform(args)
     print(train_tsfm)
 
-    train_set = AttrDataset(args=args, split=args.train_split, transform=train_tsfm)
+    #train_set = AttrDataset(args=args, split=args.train_split, transform=train_tsfm)
+    train_set = AttrDataset_new(args=args, split=args.train_split, transformation_dict=args.train_transform)
 
     train_loader = DataLoader(
         dataset=train_set,
@@ -74,7 +75,8 @@ def main(args):
         num_workers=8,
         pin_memory=True,
     )
-    valid_set = AttrDataset(args=args, split=args.valid_split, transform=valid_tsfm)
+    #valid_set = AttrDataset(args=args, split=args.valid_split, transform=valid_tsfm)
+    valid_set = AttrDataset_new(args=args, split=args.valid_split, transformation_dict=args.valid_transform)
 
     valid_loader = DataLoader(
         dataset=valid_set,
