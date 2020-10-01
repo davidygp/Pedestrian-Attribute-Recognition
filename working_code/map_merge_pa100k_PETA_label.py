@@ -38,8 +38,8 @@ def generate_data_description(pa100k_dir, peta_dir):
     pa100k_df['image_id'] = pa100k_dataset.image_name
     print(pa100k_df.head())
 
-    annotated_pa100k_df = pd.read_csv(os.path.join(pa100k_dir, 'PA100K_program_annotated_zero_one_manual_4K.csv'))
-    # annotated_pa100k_df = pd.read_csv(os.path.join(pa100k_dir, 'program_annotated_zero_one_pa100k.csv'))
+    # annotated_pa100k_df = pd.read_csv(os.path.join(pa100k_dir, 'PA100K_program_annotated_zero_one_manual_4K.csv'))
+    annotated_pa100k_df = pd.read_csv(os.path.join(pa100k_dir, 'program_annotated_zero_one_pa100k.csv'))
 
     annotated_pa100k_df = annotated_pa100k_df.drop(annotated_pa100k_df.columns[0], axis=1)
 
@@ -92,8 +92,8 @@ def generate_data_description(pa100k_dir, peta_dir):
 
     peta_pkl_file = os.path.join(peta_dir, 'dataset.pkl')
 
-    pa100k_peta_pkl_file = os.path.join(peta_dir, 'pa100k_4k_validated_peta_dataset.pkl')
-    # pa100k_peta_pkl_file = os.path.join(peta_dir, 'pa100k_origin_peta_dataset.pkl')
+    # pa100k_peta_pkl_file = os.path.join(peta_dir, 'pa100k_4k_validated_peta_dataset.pkl')
+    pa100k_peta_pkl_file = os.path.join(peta_dir, 'pa100k_origin_peta_dataset.pkl')
 
     with open(peta_pkl_file, 'rb') as handle:
         peta_data_info = pickle.load(handle)
@@ -108,17 +108,21 @@ def generate_data_description(pa100k_dir, peta_dir):
         peta_data_info.partition.test = []
 
         list_100k = [x for x in range(0, 100000)]
-        list_19000 = [x for x in range(100000, 119000)]
+        # list_19000 = [x for x in range(100000, 119000)]
 
         for idx in range(5):
             random.shuffle(list_100k)
-            random.shuffle(list_19000)
-            test = np.array(list_19000[-7600:])
+            # random.shuffle(list_19000)
+            # test = np.array(list_19000[-7600:])
+            # train = np.array(list_100k[:80000] + list_19000[:11400])
+            # val = np.array(list_100k[80000:])
 
-            train = np.array(list_100k[:80000] + list_19000[:11400])
-            val = np.array(list_100k[80000:])
+            train = peta_data['peta'][0][0][3][idx][0][0][0][0][:, 0] - 1 + 100000
+            val = peta_data['peta'][0][0][3][idx][0][0][0][1][:, 0] - 1 + 100000
+            test = peta_data['peta'][0][0][3][idx][0][0][0][2][:, 0] - 1 + 100000
+            trainval = np.concatenate((train, val), axis=0)
 
-            trainval = np.array(list_100k[:80000] + list_19000[:11400] + list_100k[80000:])
+            trainval = np.array(trainval.tolist() + list_100k)
 
             peta_data_info.partition.train.append(train)
             peta_data_info.partition.val.append(val)

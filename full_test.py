@@ -31,24 +31,27 @@ from tools.utils import time_str, save_ckpt, ReDirectSTD, set_seed
 from datetime import datetime
 import sys
 
+import pandas as pd
 import torchvision.models as models
+
+import argparse
 
 # resnet18 = models.resnet18(pretrained=True)
 
 from torch.utils.tensorboard import SummaryWriter
 
 set_seed(605)
-log_dir = 'runs/' + datetime.now().strftime("%Y%m%d-%H%M%S")
-writer = SummaryWriter(log_dir)
 
-import argparse
+
+
+
 
 
 def argument_parser():
     parser = argparse.ArgumentParser(description="attribute recognition",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument("dataset", type=str, default="RAP")
+    parser.add_argument("dataset", type=str, default="PA+PETA+RAP")
     parser.add_argument("--model", type=str, default="resnet50")
     parser.add_argument("--debug", action='store_false')
 
@@ -163,6 +166,10 @@ def trainer(epoch, model, train_loader, valid_loader, criterion, optimizer, lr_s
     best_epoch = 0
 
     result_list = defaultdict()
+    
+    df_metrics = pd.DataFrame(columns=['epoch', 'train_loss', 'train_instance_acc', 'train_instance_prec', 'train_instance_recall', 'train_instance_f1', 'train_ma', 'train_pos_recall', 'train_neg_recall',
+                                   'valid_loss', 'valid_instance_acc', 'valid_instance_prec', 'valid_instance_recall', 'valid_instance_f1', 'valid_ma', 'valid_pos_recall', 'valid_neg_recall'])
+
 
     for i in range(epoch):
 
@@ -207,6 +214,31 @@ def trainer(epoch, model, train_loader, valid_loader, criterion, optimizer, lr_s
 
         print(f'{time_str()}')
         print('-' * 60)
+        
+        # create metrics dataframe to save as csv
+
+        new_metrics = { 
+            'epoch':i,
+            'train_loss':train_loss,
+            'train_instance_acc':train_result.instance_acc,
+            'train_instance_prec':train_result.instance_prec,
+            'train_instance_recall':train_result.instance_recall,
+            'train_instance_f1':train_result.instance_f1,
+            'train_ma':train_result.ma,
+            'train_pos_recall':np.mean(train_result.label_pos_recall),
+            'train_neg_recall':np.mean(train_result.label_neg_recall),
+            'valid_loss':valid_loss,
+            'valid_instance_acc':valid_result.instance_acc,
+            'valid_instance_prec':valid_result.instance_prec,
+            'valid_instance_recall':valid_result.instance_recall,
+            'valid_instance_f1':valid_result.instance_f1,
+            'valid_ma':valid_result.ma,
+            'valid_pos_recall':np.mean(valid_result.label_pos_recall),
+            'valid_neg_recall':np.mean(valid_result.label_neg_recall)
+            }
+        #append row to the dataframe
+        df_metrics = df_metrics.append(new_metrics, ignore_index=True)
+        df_metrics.to_csv(csv_file_name, index=False)
 
         cur_metric = valid_result.ma
 
@@ -225,7 +257,15 @@ def trainer(epoch, model, train_loader, valid_loader, criterion, optimizer, lr_s
 
 
 parser = argument_parser()
-args = parser.parse_args(["RAP"])
+args = parser.parse_args(["PETA+RAP"])
+
+log_dir = 'runs/' + args.dataset+"_"+args.model+"_"+datetime.now().strftime("%Y%m%d-%H%M%S")
+csv_dir = 'csv_folder/'
+if not os.path.exists(csv_dir):
+    os.makedirs(csv_dir)
+csv_file_name = os.path.join(csv_dir, args.dataset+"_"+args.model+"_"+datetime.now().strftime("%Y%m%d-%H%M%S") +'.csv')
+writer = SummaryWriter(log_dir)
+
 main(args)
 
     # os.path.abspath()

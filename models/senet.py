@@ -405,14 +405,13 @@ def se_resnet50(pretrained='imagenet'):
     return model
 
 
-def se_resnet101(num_classes=1000, pretrained='imagenet', norm_layer=nn.BatchNorm2d):
+def se_resnet101(pretrained='imagenet'):
     model = SENet(SEResNetBottleneck, [3, 4, 23, 3], groups=1, reduction=16,
                   dropout_p=None, inplanes=64, input_3x3=False,
-                  downsample_kernel_size=1, downsample_padding=0,
-                  num_classes=num_classes, norm_layer=norm_layer)
+                  downsample_kernel_size=1, downsample_padding=0)
     if pretrained is not None:
         settings = pretrained_settings['se_resnet101']['imagenet']
-        initialize_pretrained_model(model, num_classes, settings)
+        initialize_pretrained_model(model, settings)
     return model
 
 

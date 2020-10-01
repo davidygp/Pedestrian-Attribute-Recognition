@@ -1,15 +1,7 @@
 import os
-import sys
-sys.path.append("/home/svu/e0384936/Anaconda3/Lib/site-packages")
-cwd = os.getcwd()
-if "Pedestrian-Attribute-Recognition" in cwd:
-    print("We're currently in Pedestrian-Attribute-Recognition folder")
-else:
-    print("Moving into Pedestrian-Attribute-Recognition folder")
-
-import os
 import pprint
 from collections import OrderedDict, defaultdict
+import json
 
 import numpy as np
 import pandas as pd
@@ -24,9 +16,9 @@ from loss.CE_loss import CEL_Sigmoid
 
 from models.base_block import FeatClassifier, BaseClassifier
 from models.resnet import resnet50, resnet101, resnet152, resnext50_32x4d, resnext101_32x8d
+from models.senet import se_resnet101, se_resnet50
 from models.dpn import dpn68, dpn68b, dpn92, dpn98, dpn131, dpn107
 from models.densenet import densenet121, densenet169, densenet201, densenet161
-from models.senet import se_resnet101, se_resnet50
 
 from tools.function import get_model_log_path, get_pedestrian_metrics
 from tools.utils import time_str, save_ckpt, ReDirectSTD, set_seed
