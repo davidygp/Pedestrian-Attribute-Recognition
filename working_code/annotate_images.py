@@ -2,18 +2,17 @@ from pedestrian_attri_recog_model import AttrRecogModel
 import os
 import pandas as pd
 
-image_data_path = 'D:\\PA-100K\\PA-100K-20200420T144034Z-001\\PA-100K\\data\\release_data\\release_data\\'
-
+image_data_path = '/Users/jiahao/Documents/GitHub/Capstone/data/test'
 
 def annotate_images_under_directory(image_data_path):
     model = AttrRecogModel()
 
-    image_files = [f for f in os.listdir(image_data_path) if f[-4:] == '.jpg']
+    image_files = [f for f in os.listdir(image_data_path) if f[-4:] == '.png']
 
     df = pd.DataFrame()
 
     for f in image_files:
-        image_file = image_data_path + f
+        image_file = os.path.join(image_data_path, f)
         result = model.predict_image_general(image_file)
         df2 = pd.DataFrame({k: [v] for k, v in result.items()})
         df2['image_id'] = f
@@ -23,7 +22,6 @@ def annotate_images_under_directory(image_data_path):
             df = df.append(df2, ignore_index=True)
 
     df.to_csv(image_data_path + '_annotated.csv')
-
 
 def convert_dataframe_to_zero_and_one():
     def change(x):
@@ -44,4 +42,5 @@ def convert_dataframe_to_zero_and_one():
     data.to_csv(image_data_path + '_annotated_zero_one.csv')
 
 
+annotate_images_under_directory(image_data_path)
 convert_dataframe_to_zero_and_one()
