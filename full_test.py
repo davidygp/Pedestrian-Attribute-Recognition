@@ -43,15 +43,11 @@ from torch.utils.tensorboard import SummaryWriter
 set_seed(605)
 
 
-
-
-
-
 def argument_parser():
     parser = argparse.ArgumentParser(description="attribute recognition",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
-    parser.add_argument("dataset", type=str, default="PA+PETA+RAP")
+    parser.add_argument("dataset", type=str, default="PETA")
     parser.add_argument("--model", type=str, default="resnet50")
     parser.add_argument("--debug", action='store_false')
 
@@ -257,7 +253,7 @@ def trainer(epoch, model, train_loader, valid_loader, criterion, optimizer, lr_s
 
 
 parser = argument_parser()
-args = parser.parse_args(["PETA+RAP"])
+args = parser.parse_args(["PETA"])
 
 log_dir = 'runs/' + args.dataset+"_"+args.model+"_"+datetime.now().strftime("%Y%m%d-%H%M%S")
 csv_dir = 'csv_folder/'
