@@ -42,8 +42,8 @@ python ./train.py --batchsize 128 --train_epoch 100
 #### PA100k dataset can be obtained from: https://drive.google.com/drive/folders/0B5_Ra3JsEOyOUlhKM0VPZ1ZWR2M
 #### RAPv2 dataset can be obtained from: https://drive.google.com/file/d/1hoPIB5NJKf3YGMvLFZnIYG5JDcZTxHph/view
 
-    
-Codes are based on the repository from:
+### Acknowledgements
+Codes are based on the repositories. (Thank you for your released code!):
 - https://github.com/dangweili/pedestrian-attribute-recognition-pytorch
 - https://github.com/valencebond/Strong_Baseline_of_Pedestrian_Attribute_Recognition
 
