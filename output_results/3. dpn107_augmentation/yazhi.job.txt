@@ -1,0 +1,11 @@
+qsub PETA_dpn107_Mosaic_v1.txt; 
+qsub PETA_dpn107_Mosaic_v2.txt; 
+qsub PETA_dpn107_Mosaic_v3.txt; 
+qsub PETA_dpn107_Mosaic_v4.txt; 
+qsub PETA_dpn107_Mosaic_v5.txt;
+
+qsub PETA_dpn107_RandomErase_v1.txt; 
+qsub PETA_dpn107_RandomErase_v2.txt; 
+qsub PETA_dpn107_RandomErase_v3.txt; 
+qsub PETA_dpn107_RandomErase_v4.txt; 
+qsub PETA_dpn107_RandomErase_v5.txt;

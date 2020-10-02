@@ -1,0 +1,14 @@
+      ======================================================================================
+      Resource Usage on 2020-09-07 00:13:53.300660:
+      JobId: 1930466.venus01  				 Project: PETA_resnext50_32x4d 
+      Submission Host: atlas8-c01.hpc.local 
+      Exit Status: 0
+      NCPUs Requested: 10 				 NCPUs Used: 10
+      Memory Requested: 80gb 				 Memory Used: 5817800kb 
+      Vmem Used: 5817800kb
+      CPU Time Used: 01:41:26 
+      Walltime requested: 24:00:00 			 Walltime Used: 00:59:26
+      Submit Time:  Sun Sep  6 16:07:29 2020 		 Start Time: Sun Sep  6 23:14:23 2020 
+      End Time: Mon Sep  7 00:13:53 2020 
+      Execution Nodes Used: (volta02:ncpus=10:mem=83886080kb:ngpus=1)
+      ======================================================================================

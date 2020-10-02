@@ -1,0 +1,21 @@
+#!/bin/bash
+#PBS -P PETA_resnet101
+#PBS -j oe
+#PBS -N pytorch
+#PBS -q volta_gpu
+#PBS -l select=1:ncpus=10:mem=80gb:ngpus=1
+#PBS -l walltime=24:00:00
+
+cd $PBS_O_WORKDIR;
+np=$(cat ${PBS_NODEFILE} | wc -l);
+
+image="/app1/common/singularity-img/3.0.0/pytorch_1.3_libsndfile_cuda10.0-cudnn7-devel-ubuntu18.04-py36.simg"
+
+singularity exec $image bash << EOF > stdout.$PBS_JOBID 2> stderr.$PBS_JOBID
+
+python train.py PETA --model resnet101
+
+# you can put more commands here
+echo “PETA_resnet101”
+
+EOF
