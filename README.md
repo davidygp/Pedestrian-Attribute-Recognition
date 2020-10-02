@@ -15,12 +15,12 @@ pip install -r requirements.txt
 (The previous PETA.mat from https://github.com/dangweili/pedestrian-attribute-recognition-pytorch is renamed it as "./PETA_old.mat")   
 download the original PETA dataset (http://mmlab.ie.cuhk.edu.hk/projects/PETA.html), and place it as the folder "./PETA dataset"
 
-4. Run the .py script to generate the new PETA.mat file  
+4. Run the .py script to process the PETA images and generate the new PETA.mat file in the "./data" folder  
 (Note: Ordering of the image names differs between Windows & Mac, to get the exact same IDs it should be run on Windows)  
 ```
 python ./process_updated_labels_n_images_v3.1.py  
 ```
-5. Run the .py script to generate the dataset.pkl file  
+5. Run the .py script to generate the dataset.pkl file in the "./data" folder  
 ```
 python ./format_peta.py  
 ```
