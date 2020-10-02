@@ -20,7 +20,7 @@ all_filenames = [i for i in glob.glob('*.{}'.format(extension))]
 data = [] # pd.concat takes a list of dataframes as an agrument
 for csv in all_filenames:
     frame = pd.read_csv(csv)
-    frame['filename'] = os.path.basename(csv)
+    frame['Model'] = os.path.basename(csv)
     data.append(frame)
 
 df = pd.concat(data, ignore_index=True) #dont want pandas to try an align row indexes
@@ -28,19 +28,19 @@ df['epoch']=df['epoch']+1
 df.to_csv("merged_data.csv", index=False, encoding='utf-8-sig')
 
 #%% keep max f1
-idx = df.groupby(['filename'])['valid_instance_f1'].transform(max) == df['valid_instance_f1']
+idx = df.groupby(['Model'])['valid_instance_f1'].transform(max) == df['valid_instance_f1']
 result = df[idx]
 
 result.to_csv("max_f1.csv", index=False)
 
 #%%
-df_selected=df[['epoch', 'valid_instance_f1', 'filename']]
+df_selected=df[['epoch', 'valid_instance_f1', 'Model']]
 
 
 #%%
 
 
-df_selected.filename.replace({
+df_selected.Model.replace({
     'PETA_resnet101_20200920-073345.csv': 'ResNet-101',
     'PETA_resnext50_32x4d_20200906-151430.csv': 'ResNeXt-50_32x4d',
     'PETA_dpn131_20200906-115445.csv': 'DPN-131',
@@ -60,34 +60,20 @@ df_selected.filename.replace({
 
 import seaborn as sns
 plt.figure(figsize=(15,8))
-# g = sns.lineplot(data=df_selected, x='epoch', y='valid_instance_f1', hue='filename',
-#                  hue_order = ['ResNet-50',
-#                                 'ResNet-101',
-#                                 'DenseNet121',
-#                                 'ResNeXt-50_32x4d',
-#                                 'ResNeXt-101_32x8d',
-#                                 'DPN-68',
-#                                 'DPN-68b',
-#                                 'DPN-92',
-#                                 'DPN-107',
-#                                 'DPN-131',
-#                                 'SE_ResNet-50',
-#                                 'SE_ResNet-101'
-#                                 ])
+g = sns.lineplot(data=df_selected, x='epoch', y='valid_instance_f1', hue='Model',
+                  hue_order = ['ResNet-50',
+                                'ResNet-101',
+                                'DenseNet121',
+                                'ResNeXt-50_32x4d',
+                                'ResNeXt-101_32x8d',
+                                'DPN-68',
+                                'DPN-68b',
+                                'DPN-92',
+                                'DPN-107',
+                                'DPN-131',
+                                'SE_ResNet-50',
+                                'SE_ResNet-101'
+                                ])
 
-g = sns.lineplot(data=df_selected, x='epoch', y='valid_instance_f1', hue='filename')
-
-g.get_figure().savefig('test.png', dpi=300)
-
-#%%
-
-loss_train = df['train_loss']
-loss_val = df['valid_loss']
-epochs = df['epoch']
-plt.plot(epochs, loss_train, 'g', label='Training loss')
-plt.plot(epochs, loss_val, 'b', label='validation loss')
-plt.title('Training and Validation loss')
-plt.xlabel('Epochs')
-plt.ylabel('Loss')
-plt.legend()
-plt.show()
+g.set(xlabel='Epoch', ylabel='F1 score')
+g.get_figure().savefig('backbone_plot.png', dpi=300)
