@@ -17,6 +17,7 @@ pip install -r requirements.txt
 download the original PETA dataset (http://mmlab.ie.cuhk.edu.hk/projects/PETA.html), and place it as the folder "./PETA dataset"
 ```
 4. Run the .py script to generate the new PETA.mat file  
+(Note: Ordering of the image names differs between Windows & Mac, to get the exact same IDs it should be run on Windows)  
 ```
 python ./process_updated_labels_n_images_v3.1.py  
 ```
