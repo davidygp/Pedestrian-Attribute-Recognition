@@ -21,7 +21,6 @@ from dataset.AttrDataset import AttrDataset, get_transform
 from loss.CE_loss import CEL_Sigmoid
 from models.base_block import FeatClassifier, BaseClassifier
 from models.resnet import resnet50
-from models.resnet_hr import resnet50_hr
 from models.senet import se_resnet101, se_resnet50
 from models.densenet import densenet121
 from models.resnext import resnext101_32x4d
