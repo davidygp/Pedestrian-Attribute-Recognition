@@ -1,35 +1,34 @@
 # Pedestrian-Attribute-Recognition
 
 ### How to set-up
-(Clone the repo)  
-
+1. Clone the repo  
 ```bash
 git clone git@github.com:davidygp/Pedestrian-Attribute-Recognition.git  
 cd Pedestrian-Attribute-Recognition/working_code  
 ```
-(Install the required packages)  
+2. Install the required packages  
 ```
 pip install -r requirements.txt  
 ```
-(Get the raw data)  
+3. Get the raw data  
 ```
 (The additional annotated .txt files are in the folder "./Updated_Labels/")  
 (The previous PETA.mat from https://github.com/dangweili/pedestrian-attribute-recognition-pytorch is renamed it as "./PETA_old.mat")   
 download the original PETA dataset (http://mmlab.ie.cuhk.edu.hk/projects/PETA.html), and place it as the folder "./PETA dataset"
 ```
-(Run the .py script to generate the new PETA.mat file)  
+4. Run the .py script to generate the new PETA.mat file  
 ```
 python ./process_updated_labels_n_images_v3.1.py  
 ```
-(Run the .py script to generate the dataset.pkl file)  
+5. Run the .py script to generate the dataset.pkl file  
 ```
 python ./format_peta.py  
 ```
-(Copy the "./data" folder to the main repo folder)  
+6. Copy the "./data" folder to the main repo folder  
 ```
 mv ./data ../  
 ```
-(Run the training as required)  
+7. Run the training as required  
 ```
 cd ../  
 python ./train.py  
