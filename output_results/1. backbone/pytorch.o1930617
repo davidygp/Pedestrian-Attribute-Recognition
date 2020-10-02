@@ -1,0 +1,14 @@
+      ======================================================================================
+      Resource Usage on 2020-09-07 01:07:31.558862:
+      JobId: 1930617.venus01  				 Project: PETA_densenet121 
+      Submission Host: atlas8-c01.hpc.local 
+      Exit Status: 0
+      NCPUs Requested: 10 				 NCPUs Used: 10
+      Memory Requested: 80gb 				 Memory Used: 5687784kb 
+      Vmem Used: 5687784kb
+      CPU Time Used: 01:34:28 
+      Walltime requested: 24:00:00 			 Walltime Used: 00:53:30
+      Submit Time:  Sun Sep  6 23:46:12 2020 		 Start Time: Mon Sep  7 00:13:56 2020 
+      End Time: Mon Sep  7 01:07:31 2020 
+      Execution Nodes Used: (volta02:ncpus=10:mem=83886080kb:ngpus=1)
+      ======================================================================================

@@ -1,0 +1,14 @@
+      ======================================================================================
+      Resource Usage on 2020-09-26 00:13:12.008591:
+      JobId: 1969583.venus01  				 Project: PETA_RAP_dpn107 
+      Submission Host: atlas8-c01.hpc.local 
+      Exit Status: 0
+      NCPUs Requested: 10 				 NCPUs Used: 10
+      Memory Requested: 80gb 				 Memory Used: 11488744kb 
+      Vmem Used: 11488744kb
+      CPU Time Used: 31:49:12 
+      Walltime requested: 72:00:00 			 Walltime Used: 26:14:18
+      Submit Time:  Tue Sep 22 21:07:28 2020 		 Start Time: Thu Sep 24 21:58:49 2020 
+      End Time: Sat Sep 26 00:13:12 2020 
+      Execution Nodes Used: (volta03:ncpus=10:mem=83886080kb:ngpus=1)
+      ======================================================================================

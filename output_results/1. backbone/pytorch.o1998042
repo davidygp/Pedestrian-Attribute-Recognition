@@ -1,0 +1,14 @@
+      ======================================================================================
+      Resource Usage on 2020-09-27 15:49:46.295772:
+      JobId: 1998042.venus01  				 Project: PETA_senet_101 
+      Submission Host: atlas8-c01.hpc.local 
+      Exit Status: 0
+      NCPUs Requested: 10 				 NCPUs Used: 10
+      Memory Requested: 80gb 				 Memory Used: 6578040kb 
+      Vmem Used: 6578040kb
+      CPU Time Used: 02:03:14 
+      Walltime requested: 24:00:00 			 Walltime Used: 01:23:32
+      Submit Time:  Sun Sep 27 14:26:12 2020 		 Start Time: Sun Sep 27 14:26:10 2020 
+      End Time: Sun Sep 27 15:49:46 2020 
+      Execution Nodes Used: (volta04:ncpus=10:mem=83886080kb:ngpus=1)
+      ======================================================================================

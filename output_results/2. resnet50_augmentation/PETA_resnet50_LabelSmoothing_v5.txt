@@ -1,0 +1,21 @@
+#!/bin/bash
+#PBS -P PETA_dpn107
+#PBS -j oe
+#PBS -N pytorch
+#PBS -q volta_gpu
+#PBS -l select=1:ncpus=10:mem=80gb:ngpus=1
+#PBS -l walltime=24:00:00
+
+cd $PBS_O_WORKDIR;
+np=$(cat ${PBS_NODEFILE} | wc -l);
+
+image="/app1/common/singularity-img/3.0.0/pytorch_1.3_libsndfile_cuda10.0-cudnn7-devel-ubuntu18.04-py36.simg"
+
+singularity exec $image bash << EOF > stdout.$PBS_JOBID 2> stderr.$PBS_JOBID
+
+python train.py PETA --model resnet50 --train_transform """{\"Order\": [\"Resize\", \"Pad\", \"RandomCrop\", \"RandomHorizontalFlip\", \"ToTensor\", \"Normalize\", \"LabelSmoothing\"], \"Resize\": {\"size\": [256, 192]}, \"Pad\": {\"padding\": 10}, \"RandomCrop\": {\"size\": [256, 192]}, \"RandomHorizontalFlip\": {}, \"LabelSmoothing\": {\"pos_val\":0.95}, \"Normalize\": {\"mean\": [0.485, 0.456, 0.406], \"std\": [0.229, 0.224, 0.225]}}"""
+
+# you can put more commands here
+echo “PETA_resnet50_LabelSmoothing_v5”
+
+EOF
