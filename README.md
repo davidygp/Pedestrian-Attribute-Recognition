@@ -1,5 +1,6 @@
 # Pedestrian-Attribute-Recognition
 
+<br></br>  
 ### How to set-up
 1. Clone the repo  
 ```bash
@@ -33,15 +34,18 @@ mv ./data ../
 cd ../  
 python ./train.py  
 ```
-### To run with different configurations place the parameters behind train.py (see config.py for examples)
+### To run with different configurations place the parameters behind train.py  
+(see config.py for examples)  
 ```
 python ./train.py --batchsize 128 --train_epoch 100
 ```
 
+<br></br>  
 #### PETA dataset can be obtained from: http://mmlab.ie.cuhk.edu.hk/projects/PETA.html
 #### PA100k dataset can be obtained from: https://drive.google.com/drive/folders/0B5_Ra3JsEOyOUlhKM0VPZ1ZWR2M
 #### RAPv2 dataset can be obtained from: https://drive.google.com/file/d/1hoPIB5NJKf3YGMvLFZnIYG5JDcZTxHph/view
 
+<br></br>  
 ### Acknowledgements
 Codes are based on the repositories. (Thank you for your released code!):
 - https://github.com/dangweili/pedestrian-attribute-recognition-pytorch
